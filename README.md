@@ -5,3 +5,4 @@ You can add alias to your profile to reduce the typing. For example, in your ~/.
 ```
 alias jsonnet='docker run --rm -it <<name of the image>> jsonnet'
 ```
+
