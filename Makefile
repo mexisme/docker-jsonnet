@@ -1,10 +1,17 @@
 DOCKER=docker
-DOCKER-BUILD=$(DOCKER) build
 
 GOLANG-VERSION=1.10
-DOCKER-TAG=mexisme/jsonnet
+DOCKER-REPO=mexisme/jsonnet
 
-alpine:
-	$(DOCKER-BUILD) --tag=$(DOCKER-TAG):alpine --build-arg=PARENT_GOLANG=golang:$(GOLANG-VERSION)-alpine --build-arg=PARENT=alpine .
-debian:
-	$(DOCKER-BUILD) --tag=$(DOCKER-TAG):debian --build-arg=PARENT_GOLANG=golang:$(GOLANG-VERSION) --build-arg=PARENT=debian .
+all: alpine debian latest
+
+latest: alpine
+	$(DOCKER) tag $(DOCKER-REPO):$< $(DOCKER-REPO):$@
+
+alpine: GOLANG-TAG=$(GOLANG-VERSION)-$@
+debian: GOLANG-TAG=$(GOLANG-VERSION)
+alpine debian:
+	$(DOCKER) build --tag=$(DOCKER-REPO):$@ --build-arg=PARENT_GOLANG=golang:$(GOLANG-TAG) --build-arg=PARENT=$@ .
+
+push: alpine debian latest
+	for D in $^; do $(DOCKER) push $(DOCKER-REPO):$$D; done
