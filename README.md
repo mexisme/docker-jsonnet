@@ -29,7 +29,12 @@ alias go-jsonnet='docker run --rm -it -v `pwd`:/src mexisme/jsonnet go-jsonnet'
 
 The [Dockerfile](./Dockerfile) and [Makefile](./Makefile) can build either Alpine Linux or Debian versions:
 
-## Alpine (default):
+## Make all:
+```
+make
+```
+
+## Alpine:
 ```
 make alpine
 ```
