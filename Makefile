@@ -2,7 +2,7 @@ DOCKER=docker
 DOCKER-BUILD=$(DOCKER) build
 
 GOLANG-VERSION=1.10
-DOCKER-TAG=jsonnet
+DOCKER-TAG=mexisme/jsonnet
 
 alpine:
 	$(DOCKER-BUILD) --tag=$(DOCKER-TAG):alpine --build-arg=PARENT_GOLANG=golang:$(GOLANG-VERSION)-alpine --build-arg=PARENT=alpine .
