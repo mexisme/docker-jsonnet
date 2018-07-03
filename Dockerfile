@@ -39,13 +39,13 @@ WORKDIR /src
 
 RUN git clone https://github.com/google/jsonnet.git
 RUN cd jsonnet && make jsonnet
-RUN cp -aiv jsonnet/jsonnet /src/
+RUN cp -av jsonnet/jsonnet /
 
 ##########
 
 FROM $PARENT_GOLANG as go_builder
 
-ARG GOPATH=/src/go
+ARG GOPATH=/src
 
 RUN if [ -f /etc/debian_version ]; then \
       apt-get update && apt-get upgrade -y && \
@@ -56,11 +56,10 @@ RUN if [ -f /etc/debian_version ]; then \
       apk add --no-cache --update ca-certificates git make; \
     fi
 
-WORKDIR /src
+WORKDIR $GOPATH
 
-RUN mkdir -pv $GOPATH
 RUN go get -v github.com/google/go-jsonnet/jsonnet
-RUN cp -aiv $GOPATH/bin/jsonnet /src/
+RUN cp -av $GOPATH/bin/jsonnet /
 
 #RUN git clone git@github.com:google/go-jsonnet.git
 
@@ -82,16 +81,15 @@ RUN if [ -f /etc/debian_version ]; then \
       adduser -D -G app -h /app -s /bin/sh app; \
     fi
 
-WORKDIR /app
+WORKDIR /
 
-COPY --from=cc_builder --chown=app:app /src/jsonnet jsonnet
-COPY --from=go_builder --chown=app:app /src/jsonnet go-jsonnet
+COPY --from=cc_builder /jsonnet jsonnet
+COPY --from=go_builder /jsonnet go-jsonnet
 
 RUN chmod a+x jsonnet*
 
 VOLUME /src
 
 USER app
-WORKDIR /app
 
-CMD /app/jsonnet
+CMD /jsonnet
