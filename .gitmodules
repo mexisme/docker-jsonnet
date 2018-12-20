@@ -1,0 +1,6 @@
+[submodule "vendor/go-jsonnet"]
+	path = vendor/go-jsonnet
+	url = https://github.com/google/go-jsonnet.git
+[submodule "vendor/jsonnet"]
+	path = vendor/jsonnet
+	url = https://github.com/google/jsonnet.git
