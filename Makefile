@@ -35,16 +35,13 @@ alpine-build debian-build:
 alpine-build/Dockerfile debian-build/Dockerfile: template.dockerfile
 	sed -e 's/%PARENT%/$(PARENT)/g;s/%PARENT_CC%/$(PARENT_CC)/g;s/%PARENT_GOLANG%/$(PARENT_GOLANG)/g' <$< >$@
 
-.PHONY: update update-subrepo
-update: update-subrepo alpine-build/Dockerfile debian-build/Dockerfile
+.PHONY: update update-vendored
+update: update-vendored alpine-build/Dockerfile debian-build/Dockerfile
 
 # Note: You need to install https://github.com/ingydotnet/git-subrepo for this to work:
-update-subrepo:
-	git subrepo pull --all
-
-# Note: You need to install https://github.com/ingydotnet/git-subrepo for this to work:
-update:
-	git subrepo pull --all
+update-vendored:
+	git submodule sync --recursive
+	git submodule update --init
 
 .PHONY: push
 push: alpine debian latest
