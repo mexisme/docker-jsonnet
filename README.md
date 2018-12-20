@@ -1,6 +1,6 @@
 # Introduction
 
-Simple dockerfile to install [jsonnet](https://github.com/google/jsonnet) and [go-jsonnet](https://github.com/google/go-jsonnet) into a runnable container. 
+Simple dockerfile to install [jsonnet](https://github.com/google/jsonnet) and [go-jsonnet](https://github.com/google/go-jsonnet) into a runnable container.
 
 # Usage
 
@@ -42,4 +42,13 @@ make alpine
 ## Debian:
 ```
 make debian
+```
+
+# Updating local copies of `jsonnet` and `go-jsonnet`:
+In an attempt to stay reasonably hermetic, the Jsonnet code for C++ and Go has been vendored into the `subrepo/` directory.
+This also helps Docker to decide when it needs to use a cached layer or re-run the build steps.
+
+In order to update the contents of the vendored code, you must first install https://github.com/ingydotnet/git-subrepo and then run the following:
+```
+make update
 ```

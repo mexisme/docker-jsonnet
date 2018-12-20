@@ -1,30 +1,22 @@
-# You should override $PARENT at build-time to name the upper-level container
-#     e.g. node:7-alpine
-# Override $SECRETS_CONFIG_FILE to use a different get-secrets config. file
-
-# Note: This will only work for recent versions of Docker
-# Note: Your $PARENT base OS/Distribution (Debian or Alpine) must be compatible with the Golang builder base.
-#      A Golang binary built with Debian won't usually work on Alpine out-of-the-box, for example
-
-ARG PARENT
-ARG PARENT_CC=$PARENT
-ARG PARENT_GOLANG
+# Use the attached Makefile to build target-specific Dockerfiles from this template.
+# This file, as it stands, will not otherwise build correctly
 
 # Debian-based builder:
-# ARG PARENT=debian
-# ARG PARENT_CC=debian
-# ARG PARENT_GOLANG=golang:1.10
+# PARENT=debian
+# PARENT_CC=debian
+# PARENT_GOLANG=golang:1.11
 
 # Alpine-based builder:
-# ARG PARENT=alpine
-# ARG PARENT_CC=alpine
-# ARG PARENT_GOLANG=golang:1.10-alpine
+# PARENT=alpine
+# PARENT_CC=alpine
+# PARENT_GOLANG=golang:1.11-alpine
+
 
 ARG ROOT_USER=root
 
 ##########
 
-FROM $PARENT_CC as cc_builder
+FROM %PARENT_CC% as cc_builder
 
 RUN if [ -f /etc/debian_version ]; then \
       apt-get update && apt-get upgrade -y && \
@@ -37,35 +29,35 @@ RUN if [ -f /etc/debian_version ]; then \
 
 WORKDIR /src
 
-RUN git clone https://github.com/google/jsonnet.git
-RUN cd jsonnet && make jsonnet
-RUN cp -av jsonnet/jsonnet /
+COPY vendor/jsonnet/ ./
+RUN make jsonnet
+RUN cp -av jsonnet /
 
 ##########
 
-FROM $PARENT_GOLANG as go_builder
+FROM %PARENT_GOLANG% as go_builder
 
 ARG GOPATH=/src
 
 RUN if [ -f /etc/debian_version ]; then \
       apt-get update && apt-get upgrade -y && \
-      apt-get install -y git make; \
+      apt-get install -y git make build-essential; \
     \
     elif [ -f /etc/alpine-release ]; then \
       apk upgrade --no-cache --update && \
-      apk add --no-cache --update ca-certificates git make; \
+      apk add --no-cache --update ca-certificates git build-base; \
     fi
 
-WORKDIR $GOPATH
+WORKDIR $GOPATH/src/github.com/google/go-jsonnet
 
-RUN go get -v github.com/google/go-jsonnet/jsonnet
-RUN cp -av $GOPATH/bin/jsonnet /
-
-#RUN git clone git@github.com:google/go-jsonnet.git
+COPY vendor/go-jsonnet/ ./
+RUN go get -v ./...
+RUN go build -v
+RUN cp -aiv jsonnet /
 
 ##########
 
-FROM $PARENT
+FROM %PARENT%
 USER $ROOT_USER
 
 RUN if [ -f /etc/debian_version ]; then \
