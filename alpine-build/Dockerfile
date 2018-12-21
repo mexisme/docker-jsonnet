@@ -29,7 +29,7 @@ RUN if [ -f /etc/debian_version ]; then \
 
 WORKDIR /src
 
-COPY subrepo/jsonnet/ ./
+COPY vendor/jsonnet/ ./
 RUN make jsonnet
 RUN cp -av jsonnet /
 
@@ -50,7 +50,7 @@ RUN if [ -f /etc/debian_version ]; then \
 
 WORKDIR $GOPATH/src/github.com/google/go-jsonnet
 
-COPY subrepo/go-jsonnet/ ./
+COPY vendor/go-jsonnet/ ./
 RUN go get -v ./...
 RUN go build -v
 RUN cp -aiv jsonnet /
