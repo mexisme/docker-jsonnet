@@ -4,12 +4,12 @@
 # Debian-based builder:
 # PARENT=debian
 # PARENT_CC=debian
-# PARENT_GOLANG=golang:1.11
+# PARENT_GOLANG=golang:1.12
 
 # Alpine-based builder:
 # PARENT=alpine
 # PARENT_CC=alpine
-# PARENT_GOLANG=golang:1.11-alpine
+# PARENT_GOLANG=golang:1.12-alpine
 
 
 ARG ROOT_USER=root

@@ -1,6 +1,6 @@
 DOCKER=docker
 
-GOLANG-VERSION=1.11
+GOLANG-VERSION=1.12
 DOCKER-REPO=mexisme/jsonnet
 
 .PHONY: all latest
