@@ -41,7 +41,7 @@ update: update-vendored alpine-build/Dockerfile debian-build/Dockerfile
 # Note: You need to install https://github.com/ingydotnet/git-subrepo for this to work:
 update-vendored:
 	git submodule sync --recursive
-	git submodule update --init
+	git submodule update --init --recursive --remote
 
 .PHONY: push
 push: alpine debian latest
