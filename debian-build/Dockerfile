@@ -4,12 +4,12 @@
 # Debian-based builder:
 # PARENT=debian
 # PARENT_CC=debian
-# PARENT_GOLANG=golang:1.11
+# PARENT_GOLANG=golang:1.12
 
 # Alpine-based builder:
 # PARENT=alpine
 # PARENT_CC=alpine
-# PARENT_GOLANG=golang:1.11-alpine
+# PARENT_GOLANG=golang:1.12-alpine
 
 
 ARG ROOT_USER=root
@@ -35,7 +35,7 @@ RUN cp -av jsonnet /
 
 ##########
 
-FROM golang:1.11 as go_builder
+FROM golang:1.12 as go_builder
 
 ARG GOPATH=/src
 
@@ -52,7 +52,7 @@ WORKDIR $GOPATH/src/github.com/google/go-jsonnet
 
 COPY vendor/go-jsonnet/ ./
 RUN go get -v ./...
-RUN go build -v
+RUN go build -v ./cmd/jsonnet
 RUN cp -aiv jsonnet /
 
 ##########
