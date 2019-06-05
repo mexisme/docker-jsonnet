@@ -52,7 +52,7 @@ WORKDIR $GOPATH/src/github.com/google/go-jsonnet
 
 COPY vendor/go-jsonnet/ ./
 RUN go get -v ./...
-RUN go build -v
+RUN go build -v ./cmd/jsonnet
 RUN cp -aiv jsonnet /
 
 ##########
