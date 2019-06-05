@@ -1,23 +1,23 @@
+JSONNET-VERSION=0.13.0
+
 DOCKER=docker
 
 GOLANG-VERSION=1.12
 DOCKER-REPO=mexisme/jsonnet
 
 .PHONY: all latest
-all: alpine debian latest
+all: build latest
 latest: alpine
 	$(DOCKER) tag $(DOCKER-REPO):$< $(DOCKER-REPO):$@
 
-# alpine: GOLANG-TAG=$(GOLANG-VERSION)-$@
-# debian: GOLANG-TAG=$(GOLANG-VERSION)
-# alpine debian:
-# 	$(DOCKER) build --tag=$(DOCKER-REPO):$@ --build-arg=PARENT_GOLANG=golang:$(GOLANG-TAG) --build-arg=PARENT=$@ .
+.PHONY: build
+build: alpine debian
 
 .PHONY: alpine debian
 alpine: alpine-build/Dockerfile
 debian: debian-build/Dockerfile
 alpine debian:
-	$(DOCKER) build --tag=$(DOCKER-REPO):$@ --file $< .
+	$(DOCKER) build --tag=$(DOCKER-REPO):$@ --tag=$(DOCKER-REPO):$(JSONNET-VERSION)-$@ --file $< .
 
 alpine-build/Dockerfile: alpine-build
 alpine-build/Dockerfile: PARENT=alpine
@@ -41,8 +41,12 @@ update: update-vendored alpine-build/Dockerfile debian-build/Dockerfile
 # Note: You need to install https://github.com/ingydotnet/git-subrepo for this to work:
 update-vendored:
 	git submodule sync --recursive
-	git submodule update --init --recursive --remote
+	git submodule update --init --recursive
+	git submodule foreach --recursive git checkout v$(JSONNET-VERSION)
 
 .PHONY: push
 push: alpine debian latest
-	for D in $^; do $(DOCKER) push $(DOCKER-REPO):$$D; done
+	for D in $^; do \
+	  $(DOCKER) push $(DOCKER-REPO):$$D; \
+	  [[ $$D = latest ]] || $(DOCKER) push $(DOCKER-REPO):$(JSONNET-VERSION)-$$D; \
+	done
